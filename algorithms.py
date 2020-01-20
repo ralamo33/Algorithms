@@ -6,7 +6,7 @@ Kruskal Algorithm
 A*
 """
 import collections
-
+import random
 
 class Graph:
     """An unconnected graph of verticies and edges."""
@@ -31,12 +31,14 @@ class Graph:
 class Vertex:
     """A vertex of the undirected graph."""
 
-    def __init__(self, name):
+    def __init__(self, name, distance=random.randrange(10)):
         self.name = name
+        self.distance = distance
         self.neighbors = []
 
     def add_neighbor(self, neighbor):
         self.neighbors.append(neighbor)
+
 
 def search(graph, breadth):
     """
