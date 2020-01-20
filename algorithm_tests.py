@@ -25,11 +25,14 @@ class MyTestCase(unittest.TestCase):
 
     def test_bfs(self):
         self.assertEqual(bfs(self.graph), [self.v1, self.v2, self.v5, self.v3, self.v4])
-        self.assertEqual(bfs(self.graph2), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3])
+        self.assertEqual(little_bfs(self.u1, []), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3])
+        self.assertEqual(bfs(self.graph2), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3, self.u4, self.u5])
 
     def test_dfs(self):
         self.assertEqual(dfs(self.graph), [self.v1, self.v5, self.v4, self.v2, self.v3])
-        self.assertEqual(dfs(self.graph2), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8])
+        self.assertEqual(little_dfs(self.u1, []), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8])
+        self.assertEqual(dfs(self.graph2), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8, self.u4, self.u5])
+
 
 
 
