@@ -1,6 +1,7 @@
 """The graphic user interface."""
 
 from tkinter import *
+import time
 
 class Window(Frame):
     def __init__(self, master=None):
@@ -28,7 +29,17 @@ class Window(Frame):
 
         instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", fg="red"
                              , font=("Times New Roman", 20))
-        instructions.place(relx=.08, rely=.4)
+        #instructions.place(relx=.08, rely=.4)
+        self.time_played = Label(self, text="", fg="red", font=("Times New Roman", 20))
+        self.time_played.place(x=200, y=200)
+        self.update_time()
+
+    def update_time(self):
+        """Update the amount of time the user has spent playing."""
+        now = time.strftime("%H:%M:%S")
+        self.time_played.configure(text=now)
+        self.after(1000, self.update_time)
+
 
     def click_exit_button(self):
         exit()
@@ -37,6 +48,7 @@ root = Tk()
 app = Window(root)
 root.wm_title("Seekers")
 root.geometry("500x500")
+root.after(1000, app.update_time())
 root.mainloop()
 
 if __name__ == "__main__":
