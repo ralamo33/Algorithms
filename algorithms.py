@@ -38,7 +38,7 @@ def bfs(graph):
     """
     Use breadth first search to find the target Cell
     :param grid: (Graph) A two by two array.
-    :return: (List) The visited the function took.
+    :return: (List of Vertex) The verticies visited during the search
     """
     visited = []
     planned = collections.deque()
@@ -50,6 +50,32 @@ def bfs(graph):
                     planned.append(neighbor)
             visited.append(current)
     return visited
+
+def dfs(graph):
+    """
+    Use depth first search to find the target Cell
+    :param grid: (Graph) A two by two array.
+    :return: (List of Vertex) The verticies visited during the search
+    """
+    visited = []
+    planned = collections.deque()
+    planned.append(graph.vertices[0])
+    while len(planned) > 0:
+        current = planned.pop()
+        if current not in visited:
+            for neighbor in current.neighbors:
+                    planned.append(neighbor)
+            visited.append(current)
+    return visited
+
+def display(verticies):
+    """
+    Display the given onto the console.
+    :param verticies: (List of Vertex)
+    :return:
+    """
+    for vertex in verticies:
+        print(vertex.name)
 
 if __name__ == "__main__":
     pass
