@@ -13,6 +13,19 @@ class Window(Frame):
 
         exitButton.place(x=0, y=0)
 
+        menu = Menu(self.master)
+        self.master.config(menu=menu)
+
+        game_mode = Menu(menu)
+        game_mode.add_command(label="Search everything.")
+        game_mode.add_command(label="Search islands.")
+        game_mode.add_command(label="Search for gold.")
+        menu.add_cascade(label="Game Mode", menu=game_mode)
+
+        algorithm = Menu(menu)
+        algorithm.add_command(label="Exit", command=self.click_exit_button)
+        menu.add_cascade(label="Algorithm", menu=algorithm)
+
     def click_exit_button(self):
         exit()
 
