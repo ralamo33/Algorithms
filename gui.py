@@ -26,13 +26,17 @@ class Window(Frame):
         algorithm.add_command(label="Exit", command=self.click_exit_button)
         menu.add_cascade(label="Algorithm", menu=algorithm)
 
+        instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", fg="red"
+                             , font=("Times New Roman", 20))
+        instructions.place(relx=.08, rely=.4)
+
     def click_exit_button(self):
         exit()
 
 root = Tk()
 app = Window(root)
 root.wm_title("Seekers")
-root.geometry("320x200")
+root.geometry("500x500")
 root.mainloop()
 
 if __name__ == "__main__":
