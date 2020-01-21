@@ -4,7 +4,7 @@ from tkinter import *
 import time
 
 from PIL import ImageTk
-from PIL import Image
+from PIL import Image, ImageOps
 import algorithms
 
 class Window(Frame):
@@ -49,7 +49,8 @@ class Window(Frame):
         vertex_height = int(self.height / grid.rows)
         for vertex in grid.vertices:
             vertex_image = Image.new("RGB", (vertex_width, vertex_height), color=vertex.color)
-            background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
+            vertex_image = ImageOps.expand(vertex_image, 1)
+            background.paste(vertex_image, (100, 100))
         render = ImageTk.PhotoImage(background)
         label = Label(self, text="Hello", image=render)
         label.image = render
