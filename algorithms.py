@@ -141,6 +141,9 @@ class MyGrid:
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
 
+    def search(self, breadth):
+        return self.graph.search(breadth)
+
     def bfs(self):
         """Breadth first search"""
         return self.graph.bfs()

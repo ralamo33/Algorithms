@@ -2,16 +2,14 @@
 from tkinter import Label
 
 import algorithms as model
-import gui as view
 from enum import Enum
 import PIL
 
 class Controller:
     """Communicates between algorithms and gui."""
 
-    def __init__(self, graph=model.MyGrid(), view=view.make_view()):
+    def __init__(self, graph=model.MyGrid()):
         self.model = graph
-        self.view = view
         self.algorithm = model.Graph.bfs
         self.mutator = model.Status.NORMAL
 
@@ -22,6 +20,8 @@ class Controller:
     def run(self):
         """Run an algorithm on the model."""
         return self.algorithm(self.model)
+
+
 
 
 if __name__ == "__main__":

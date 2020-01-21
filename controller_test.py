@@ -16,9 +16,9 @@ class MyTestCase(unittest.TestCase):
     controller = Controller(graph)
 
     def test_run(self):
-        self.controller.algorithm = algorithms.Graph.bfs
+        self.controller.algorithm = Graph.bfs
         self.assertEqual(self.controller.run(), [self.v1, self.v2, self.v5, self.v3, self.v4])
-        self.controller.algorithm = algorithms.Graph.dfs
+        self.controller.algorithm = Graph.dfs
         self.assertEqual(self.controller.run(), [self.v1, self.v5, self.v4, self.v2, self.v3])
         self.controller = Controller(self.graph)
 
