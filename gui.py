@@ -3,64 +3,62 @@
 from tkinter import *
 import time
 
-from PIL import ImageTk
-
+from PIL import ImageTk as tk
+from PIL import Image
 import algorithms
-import PIL
 
 class Window(Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, width=500, height=500):
         Frame.__init__(self, master)
         self.master = master
-
+        self.width = 500
+        self.height = 500
         self.pack(fill=BOTH, expand=1)
+        self.init_buttons()
+        self.init_menus()
+        self.init_labels()
 
-        exitButton = Button(self, text="Exit", command=self.click_exit_button)
+    def init_buttons(self):
+        """Intilize buttons for self."""
+        self.exitButton = Button(self, text="Exit", command=self.click_exit_button)
+        self.exitButton.place(x=0, y=0)
 
-        exitButton.place(x=0, y=0)
+    def init_menus(self):
+        """Initialize menus for self."""
+        self.menu = Menu(self.master)
+        self.master.config(menu=self.menu)
+        self.game_mode = Menu(self.menu)
+        self.game_mode.add_command(label="Search everything.")
+        self.game_mode.add_command(label="Search islands.")
+        self.game_mode.add_command(label="Search for gold.")
+        self.menu.add_cascade(label="Game Mode", menu=self.game_mode)
+        self.algorithm = Menu(self.menu)
+        self.algorithm.add_command(label="Exit", command=self.click_exit_button)
+        self.menu.add_cascade(label="Algorithm", menu=self.algorithm)
 
-        menu = Menu(self.master)
-        self.master.config(menu=menu)
-
-        game_mode = Menu(menu)
-        game_mode.add_command(label="Search everything.")
-        game_mode.add_command(label="Search islands.")
-        game_mode.add_command(label="Search for gold.")
-        menu.add_cascade(label="Game Mode", menu=game_mode)
-
-        algorithm = Menu(menu)
-        algorithm.add_command(label="Exit", command=self.click_exit_button)
-        menu.add_cascade(label="Algorithm", menu=algorithm)
-
-        instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", fg="red"
+    def init_labels(self):
+        """Initialize labels for self."""
+        self.instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", fg="red"
                              , font=("Times New Roman", 20))
-        #instructions.place(relx=.08, rely=.4)
-        self.time_played = Label(self, text="", fg="red", font=("Times New Roman", 20))
-        self.time_played.place(x=200, y=200)
-        self.update_time()
 
-        #Display an image
-        load = algorithms.Vertex("A").draw()
-        render = ImageTk.PhotoImage(load)
-        img = Label(self, image=render)
-        img.image = render
-        img.place(x=100, y=100)
-
-    def update_time(self):
-        """Update the amount of time the user has spent playing."""
-        now = time.strftime("%H:%M:%S")
-        self.time_played.configure(text=now)
-        self.after(1000, self.update_time)
+    """def display_graph(self, graph):
+       # Display the given graph.
+        background = Image("RGBA", (self.width, self.height), (0, 0, 0, 0))
+        vertex_width = self.width / graph.cols
+        for vertex in graph.vertices:
+            vertex_image = Image("RGB", (vertex.width, vertex.height), vertex.color)
+            background = Image.Image.paste(background, vertex_image, (vertex.x, vertex.y))"""
 
 
     def click_exit_button(self):
         exit()
 
 root = Tk()
-app = Window(root)
+width = 500
+height = 500
+app = Window(root, width, height)
 root.wm_title("Seekers")
-root.geometry("500x500")
-root.after(1000, app.update_time())
+root.geometry(str(width) + "x" + str(height))
 root.mainloop()
 
 if __name__ == "__main__":

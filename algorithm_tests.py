@@ -24,14 +24,14 @@ class MyTestCase(unittest.TestCase):
     graph2 = Graph(verticies2, edges2)
 
     def test_bfs(self):
-        self.assertEqual(bfs(self.graph), [self.v1, self.v2, self.v5, self.v3, self.v4])
-        self.assertEqual(little_bfs(self.u1, []), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3])
-        self.assertEqual(bfs(self.graph2), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3, self.u4, self.u5])
+        self.assertEqual(self.graph.bfs(), [self.v1, self.v2, self.v5, self.v3, self.v4])
+        self.assertEqual(self.graph2.little_bfs(self.u1, []), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3])
+        self.assertEqual(self.graph2.bfs(), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3, self.u4, self.u5])
 
     def test_dfs(self):
-        self.assertEqual(dfs(self.graph), [self.v1, self.v5, self.v4, self.v2, self.v3])
-        self.assertEqual(little_dfs(self.u1, []), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8])
-        self.assertEqual(dfs(self.graph2), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8, self.u4, self.u5])
+        self.assertEqual(self.graph.dfs(), [self.v1, self.v5, self.v4, self.v2, self.v3])
+        self.assertEqual(self.graph2.little_dfs(self.u1, []), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8])
+        self.assertEqual(self.graph2.dfs(), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8, self.u4, self.u5])
 
 
 
