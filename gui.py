@@ -1,4 +1,4 @@
-"""The graphic user interface."""
+"""The graphic user interface. This operates as the View."""
 
 from tkinter import *
 import time
@@ -41,8 +41,6 @@ class Window(Frame):
 
     def init_labels(self):
         """Initialize labels for self."""
-        """self.instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", 
-                                  fg="red", font=("Times New Roman", 20))"""
         grid = algorithms.MyGrid()
         background = Image.new("RGB", (self.width, self.height), color="red")
         vertex_width = int(self.width / grid.cols)
@@ -52,22 +50,25 @@ class Window(Frame):
             vertex_image = ImageOps.expand(vertex_image, 1)
             background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
         render = ImageTk.PhotoImage(background)
-        label = Label(self, text="Hello", image=render)
-        label.image = render
-        label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.label = Label(self, text="Hello", image=render)
+        self.label.image = render
+        self.label.place(x=0, y=0, relwidth=1, relheight=1)
         return render
 
 
     def click_exit_button(self):
         exit()
 
-root = Tk()
-width = 500
-height = 500
-app = Window(root, width, height)
-root.wm_title("Seekers")
-root.geometry(str(width) + "x" + str(height))
-root.mainloop()
+def make_view():
+    #TODO: Do this in intialize or figure out pretty way fro this implementation.
+    """Start the view."""
+    root = Tk()
+    width = 500
+    height = 500
+    app = Window(root, width, height)
+    root.wm_title("Seekers")
+    root.geometry(str(width) + "x" + str(height))
+    return app
 
 if __name__ == "__main__":
     root.mainloop()

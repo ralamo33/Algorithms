@@ -1,4 +1,5 @@
-"""Functions implementing several algorithms on a list.
+"""Graph class with methods of various algorithms to solve it.
+This operates as the model.
 
 Desired algorithms:
 Dijstrka's Algorithm
