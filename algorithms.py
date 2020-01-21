@@ -11,13 +11,11 @@ import random
 class Graph:
     """A graph of verticies and edges."""
 
-    def __init__(self, vertices=[], edges=[], width=500, height=500):
+    def __init__(self, vertices=[], edges=[]):
         """
         :param vertices: (List)
         :param edges: (List of Tuple) pairs of verticies in an edge
         """
-        self.width = width
-        self.height = height
         self.vertices = vertices
         for edge in edges:
             self.add_edge(edge[0], edge[1])
@@ -101,9 +99,9 @@ class Graph:
             """
         return self.little_search(vertex, visited, False)
 
-class Grid:
+class MyGrid:
     """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
-    def __init__(self, rows, cols, window_width=500, window_height=500):
+    def __init__(self, rows=10, cols=10, window_width=500, window_height=500):
         """
         Create a two by two grid.
         :param rows: (int) THe number of rows on the grid.
@@ -116,26 +114,29 @@ class Grid:
         self.cols = cols
         """self.vertex_width = window_width / cols
         self.vertex_height = window_height / rows"""
-        verticies = dict()
+        vertex_by_coordinate = dict()
+        self.vertices = []
         Coordinate = collections.namedtuple("coordinate", "x y")
         edges = []
         for y in range(rows):
             for x in range(cols):
-                verticies.update({Coordinate(x, y): Vertex("grid", x, y)})
-        for cord, vertex in verticies.items():
+                vertex_by_coordinate.update({Coordinate(x, y): Vertex("grid", x, y)})
+        for cord, vertex in vertex_by_coordinate.items():
+            self.vertices.append(vertex)
             if cord.x > 0:
-                other = verticies.get(Coordinate(cord.x - 1, cord.y))
+                other = vertex_by_coordinate.get(Coordinate(cord.x - 1, cord.y))
                 edges.append((vertex, other))
             if cord.y > 0:
-                other = verticies.get(Coordinate(cord.x, cord.y - 1))
+                other = vertex_by_coordinate.get(Coordinate(cord.x, cord.y - 1))
                 edges.append((vertex, other))
             if cord.x < cols - 1:
-                other = verticies.get(Coordinate(cord.x + 1, cord.y))
+                other = vertex_by_coordinate.get(Coordinate(cord.x + 1, cord.y))
                 edges.append((vertex, other))
             if cord.y < cols - 1:
-                other = verticies.get(Coordinate(cord.x, cord.y + 1))
+                other = vertex_by_coordinate.get(Coordinate(cord.x, cord.y + 1))
                 edges.append((vertex, other))
-        self.graph = Graph(verticies, edges, window_width, window_height)
+        self.edges = edges
+        self.graph = Graph(self.vertices, self.edges)
 
     def bfs(self):
         """Breadth first search"""
@@ -176,6 +177,6 @@ def display(verticies):
 
 
 if __name__ == "__main__":
-    Graph = create_grid(3, 3)
-    display(Graph.vertices)
+    grid = MyGrid()
+    pass
 

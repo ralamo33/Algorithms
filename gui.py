@@ -4,7 +4,7 @@ from tkinter import *
 import time
 
 from PIL import ImageTk as tk
-from PIL import Image
+from PIL import Image as im
 import algorithms
 
 class Window(Frame):
@@ -13,6 +13,7 @@ class Window(Frame):
         self.master = master
         self.width = 500
         self.height = 500
+        self.history = []
         self.pack(fill=BOTH, expand=1)
         self.init_buttons()
         self.init_menus()
@@ -38,17 +39,27 @@ class Window(Frame):
 
     def init_labels(self):
         """Initialize labels for self."""
-        self.instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", fg="red"
-                             , font=("Times New Roman", 20))
+        """self.instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", 
+                                  fg="red", font=("Times New Roman", 20))"""
+        self.display_graph(algorithms.MyGrid())
 
-    """def display_graph(self, graph):
-       # Display the given graph.
-        background = Image("RGBA", (self.width, self.height), (0, 0, 0, 0))
-        vertex_width = self.width / graph.cols
-        for vertex in graph.vertices:
-            vertex_image = Image("RGB", (vertex.width, vertex.height), vertex.color)
-            background = Image.Image.paste(background, vertex_image, (vertex.x, vertex.y))"""
 
+    def display_graph(self, grid):
+        """
+        Display the given grid.
+        :param grid: (Grid) A grid represented as a graph of verticies and edges.
+        :return: Image
+        """
+        background = im.new("RGBA", (self.width, self.height), (0, 0, 0, 0))
+        self.grid = Label(self, image=background)
+        self.grid.image = background
+        vertex_width = int(self.width / grid.cols)
+        vertex_height = int(self.height / grid.rows)
+        for vertex in grid.vertices:
+            vertex_image = im.new("RGB", (vertex_width, vertex_height), vertex.color)
+            background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
+        self.history.append(background)
+        self.grid.image = background
 
     def click_exit_button(self):
         exit()
