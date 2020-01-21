@@ -3,21 +3,23 @@
 from tkinter import *
 import time
 
-from PIL import ImageTk as tk
-from PIL import Image as im
+from PIL import ImageTk
+from PIL import Image
 import algorithms
 
 class Window(Frame):
     def __init__(self, master=None, width=500, height=500):
         Frame.__init__(self, master)
         self.master = master
-        self.width = 500
-        self.height = 500
+        self.width = 450
+        self.height = 450
         self.history = []
+        self.init_labels()
         self.pack(fill=BOTH, expand=1)
         self.init_buttons()
         self.init_menus()
-        self.init_labels()
+
+
 
     def init_buttons(self):
         """Intilize buttons for self."""
@@ -41,25 +43,19 @@ class Window(Frame):
         """Initialize labels for self."""
         """self.instructions = Label(self, text="Choose a game mode and an algorithm\n and find what you are seeking!", 
                                   fg="red", font=("Times New Roman", 20))"""
-        self.display_graph(algorithms.MyGrid())
-
-
-    def display_graph(self, grid):
-        """
-        Display the given grid.
-        :param grid: (Grid) A grid represented as a graph of verticies and edges.
-        :return: Image
-        """
-        background = im.new("RGBA", (self.width, self.height), (0, 0, 0, 0))
-        self.grid = Label(self, image=background)
-        self.grid.image = background
+        grid = algorithms.MyGrid()
+        background = Image.new("RGB", (self.width, self.height), color="red")
         vertex_width = int(self.width / grid.cols)
         vertex_height = int(self.height / grid.rows)
         for vertex in grid.vertices:
-            vertex_image = im.new("RGB", (vertex_width, vertex_height), vertex.color)
+            vertex_image = Image.new("RGB", (vertex_width, vertex_height), color=vertex.color)
             background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
-        self.history.append(background)
-        self.grid.image = background
+        render = ImageTk.PhotoImage(background)
+        label = Label(self, text="Hello", image=render)
+        label.image = render
+        label.place(x=0, y=0)
+        return render
+
 
     def click_exit_button(self):
         exit()

@@ -101,7 +101,7 @@ class Graph:
 
 class MyGrid:
     """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
-    def __init__(self, rows=10, cols=10, window_width=500, window_height=500):
+    def __init__(self, rows=10, cols=10):
         """
         Create a two by two grid.
         :param rows: (int) THe number of rows on the grid.
