@@ -3,6 +3,11 @@
 from tkinter import *
 import time
 
+from PIL import ImageTk
+
+import algorithms
+import PIL
+
 class Window(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
@@ -33,6 +38,13 @@ class Window(Frame):
         self.time_played = Label(self, text="", fg="red", font=("Times New Roman", 20))
         self.time_played.place(x=200, y=200)
         self.update_time()
+
+        #Display an image
+        load = algorithms.Vertex("A").draw()
+        render = ImageTk.PhotoImage(load)
+        img = Label(self, image=render)
+        img.image = render
+        img.place(x=100, y=100)
 
     def update_time(self):
         """Update the amount of time the user has spent playing."""

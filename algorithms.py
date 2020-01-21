@@ -7,9 +7,13 @@ A*
 """
 import collections
 import random
+from PIL import Image
+from PIL import ImageOps
+
+
 
 class Graph:
-    """An unconnected graph of verticies and edges."""
+    """A graph of verticies and edges."""
 
     def __init__(self, vertices=[], edges=[]):
         """
@@ -31,14 +35,55 @@ class Graph:
 class Vertex:
     """A vertex of the undirected graph."""
 
-    def __init__(self, name, distance=random.randrange(10)):
+    def __init__(self, name, x=100, y=100, width=20, height=20, distance=random.randrange(10)):
         self.name = name
         self.distance = distance
         self.neighbors = []
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+        self.color = "white"
 
     def add_neighbor(self, neighbor):
         self.neighbors.append(neighbor)
 
+    def draw(self):
+        display = Image.new("RGB", (self.width, self.height), self.color)
+        return ImageOps.expand(display, 1)
+
+
+def create_grid(rows, cols, window_width=500, window_height=500):
+    """
+    Create a two by two grid.
+    :param rows: (int) THe number of rows on the grid.
+    :param cols: (int) THe number of columns
+    :param window_width: (int) The width of the grid.
+    :param window_height: (int) The height of the grid.
+    :return: (Graph) A two by two grid of size rows * cols, where its image is window_width by window_height.
+    """
+    vertex_width = window_width / cols
+    vertex_height = window_height / rows
+    verticies = dict()
+    Coordinate = collections.namedtuple("coordinate", "x y")
+    edges = []
+    for y in range(rows):
+        for x in range(cols):
+            verticies.update({Coordinate(x, y) : Vertex("grid", x, y, vertex_width, vertex_height)})
+    for cord, vertex in verticies.items():
+        if cord.x > 0:
+            other = verticies.get(Coordinate(cord.x - 1, cord.y))
+            edges.append((vertex, other))
+        if cord.y > 0:
+            other = verticies.get(Coordinate(cord.x, cord.y - 1))
+            edges.append((vertex, other))
+        if cord.x < cols - 1:
+            other = verticies.get(Coordinate(cord.x + 1, cord.y))
+            edges.append((vertex, other))
+        if cord.y < cols - 1:
+            other = verticies.get(Coordinate(cord.x, cord.y + 1))
+            edges.append((vertex, other))
+    return Graph(verticies, edges)
 
 def search(graph, breadth):
     """
@@ -123,8 +168,10 @@ def display(verticies):
     :return:
     """
     for vertex in verticies:
-        print(vertex.name)
+        print(vertex.x, vertex.y)
 
 
 if __name__ == "__main__":
-    pass
+    Graph = create_grid(3, 3)
+    display(Graph.vertices)
+
