@@ -7,6 +7,9 @@ A*
 """
 import collections
 import random
+from enum import Enum
+
+Coordinate = collections.namedtuple("coordinate", "x y")
 
 class Graph:
     """A graph of verticies and edges."""
@@ -114,26 +117,25 @@ class MyGrid:
         self.cols = cols
         """self.vertex_width = window_width / cols
         self.vertex_height = window_height / rows"""
-        vertex_by_coordinate = dict()
+        self.vertex_by_coordinate = dict()
         self.vertices = []
-        Coordinate = collections.namedtuple("coordinate", "x y")
         edges = []
         for y in range(rows):
             for x in range(cols):
-                vertex_by_coordinate.update({Coordinate(x, y): Vertex("grid", x, y)})
-        for cord, vertex in vertex_by_coordinate.items():
+                self.vertex_by_coordinate.update({Coordinate(x, y): Vertex("grid", x, y)})
+        for cord, vertex in self.vertex_by_coordinate.items():
             self.vertices.append(vertex)
             if cord.x > 0:
-                other = vertex_by_coordinate.get(Coordinate(cord.x - 1, cord.y))
+                other = self.vertex_by_coordinate.get(Coordinate(cord.x - 1, cord.y))
                 edges.append((vertex, other))
             if cord.y > 0:
-                other = vertex_by_coordinate.get(Coordinate(cord.x, cord.y - 1))
+                other = self.vertex_by_coordinate.get(Coordinate(cord.x, cord.y - 1))
                 edges.append((vertex, other))
             if cord.x < cols - 1:
-                other = vertex_by_coordinate.get(Coordinate(cord.x + 1, cord.y))
+                other = self.vertex_by_coordinate.get(Coordinate(cord.x + 1, cord.y))
                 edges.append((vertex, other))
             if cord.y < cols - 1:
-                other = vertex_by_coordinate.get(Coordinate(cord.x, cord.y + 1))
+                other = self.vertex_by_coordinate.get(Coordinate(cord.x, cord.y + 1))
                 edges.append((vertex, other))
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
@@ -146,6 +148,20 @@ class MyGrid:
         """Depth first search"""
         return self.graph.dfs()
 
+    def mutate(self, coordinate, status):
+        """
+        Mutate the vertex of the given coordinates to have the given status.
+        :param coordinate: (Coordinate) The x and y value of the vertex to be mutated.
+        :param status: (Status) A vertex can be NORMAL, TARGET or OBSTACLE.
+        :return: None
+        """
+        self.vertex_by_coordinate.get(coordinate).status = status
+
+class Status(Enum):
+    """The status of a vertex. The vertex has a different status for each color."""
+    NORMAL = "white"
+    TARGET = "yellow"
+    OBSTACLE = "black"
 
 
 class Vertex:
@@ -157,10 +173,16 @@ class Vertex:
         self.neighbors = []
         self.x = x
         self.y = y
-        self.color = "white"
+        self.status = Status.NORMAL
 
     def add_neighbor(self, neighbor):
         self.neighbors.append(neighbor)
+
+    def get_color(self):
+        """Get self's color based on self.status"""
+        return self.status.value
+
+
 
     """def draw(self, width, height):
         display = Image.new("RGB", (width, height), self.color)

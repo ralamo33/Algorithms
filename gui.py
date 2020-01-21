@@ -48,7 +48,7 @@ class Window(Frame):
         vertex_width = int(self.width / grid.cols)
         vertex_height = int(self.height / grid.rows)
         for vertex in grid.vertices:
-            vertex_image = Image.new("RGB", (vertex_width - 1, vertex_height - 1), color=vertex.color)
+            vertex_image = Image.new("RGB", (vertex_width - 1, vertex_height - 1), color=vertex.get_color())
             vertex_image = ImageOps.expand(vertex_image, 1)
             background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
         render = ImageTk.PhotoImage(background)
