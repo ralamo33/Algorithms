@@ -11,13 +11,13 @@ class Window(Frame):
     def __init__(self, master=None, width=500, height=500):
         Frame.__init__(self, master)
         self.master = master
-        self.width = 450
-        self.height = 450
+        self.width = 500
+        self.height = 500
         self.history = []
         self.init_labels()
-        self.pack(fill=BOTH, expand=1)
-        self.init_buttons()
         self.init_menus()
+        self.pack(fill=BOTH, expand=1)
+        #self.init_buttons()
 
 
 
@@ -48,13 +48,13 @@ class Window(Frame):
         vertex_width = int(self.width / grid.cols)
         vertex_height = int(self.height / grid.rows)
         for vertex in grid.vertices:
-            vertex_image = Image.new("RGB", (vertex_width, vertex_height), color=vertex.color)
+            vertex_image = Image.new("RGB", (vertex_width - 1, vertex_height - 1), color=vertex.color)
             vertex_image = ImageOps.expand(vertex_image, 1)
-            background.paste(vertex_image, (100, 100))
+            background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
         render = ImageTk.PhotoImage(background)
         label = Label(self, text="Hello", image=render)
         label.image = render
-        label.place(x=0, y=0)
+        label.place(x=0, y=0, relwidth=1, relheight=1)
         return render
 
 
