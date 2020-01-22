@@ -40,7 +40,7 @@ class Graph:
             """
         visited = []
         for vertex in self.vertices:
-            if vertex in visited:
+            if vertex in visited or vertex.status is Status.OBSTACLE:
                 continue
             if breadth:
                 self.little_bfs(vertex, visited)
@@ -63,10 +63,14 @@ class Graph:
                 current = planned.popleft()
             else:
                 current = planned.pop()
-            if current not in visited:
+            if current.status is Status.TARGET:
+                visited.append(current)
+                return visited
+            if current not in visited and current.status is Status.NORMAL:
+                visited.append(current)
+                current.status = Status.NORMAL_VISITED
                 for neighbor in current.neighbors:
                     planned.append(neighbor)
-                visited.append(current)
         return visited
 
     def bfs(self):
@@ -102,6 +106,15 @@ class Graph:
             :return: The Verticies that were visited.
             """
         return self.little_search(vertex, visited, False)
+
+    def reset(self):
+        """
+        Set this graph back to before it committed a search.
+        :return: (Graph) self, indistinguishable from itself before mot recent search.
+        """
+        for vertex in self.vertices:
+            if vertex.status is Status.NORMAL_VISITED:
+                vertex.status = Status.NORMAL
 
 class MyGrid:
     """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
@@ -164,6 +177,7 @@ class MyGrid:
 class Status(Enum):
     """The status of a vertex. The vertex has a different status for each color."""
     NORMAL = "white"
+    NORMAL_VISITED = "red"
     TARGET = "yellow"
     OBSTACLE = "black"
 
@@ -185,8 +199,6 @@ class Vertex:
     def get_color(self):
         """Get self's color based on self.status"""
         return self.status.value
-
-
 
     """def draw(self, width, height):
         display = Image.new("RGB", (width, height), self.color)

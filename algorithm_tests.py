@@ -24,16 +24,25 @@ class MyTestCase(unittest.TestCase):
     graph2 = Graph(verticies2, edges2)
 
     def test_bfs(self):
+        self.graph.reset()
+        self.graph2.reset()
         self.assertEqual(self.graph.bfs(), [self.v1, self.v2, self.v5, self.v3, self.v4])
+        self.graph.reset()
         self.assertEqual(self.graph2.little_bfs(self.u1, []), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3])
+        self.graph2.reset()
         self.assertEqual(self.graph2.bfs(), [self.u1, self.u8, self.u7, self.u6, self.u2, self.u3, self.u4, self.u5])
+        self.graph2.reset()
+
 
     def test_dfs(self):
+        self.graph.reset()
         self.assertEqual(self.graph.dfs(), [self.v1, self.v5, self.v4, self.v2, self.v3])
+        self.graph.reset()
+        self.graph2.reset()
         self.assertEqual(self.graph2.little_dfs(self.u1, []), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8])
+        self.graph2.reset()
         self.assertEqual(self.graph2.dfs(), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8, self.u4, self.u5])
-
-
+        self.graph2.reset()
 
 
 if __name__ == '__main__':

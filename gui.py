@@ -16,9 +16,11 @@ class Window(Frame):
         self.width = 500
         self.height = 500
         self.history = []
-        self.init_labels()
         self.init_menus()
+        self.label = Label(self)
+        self.label.place(x=0, y=0, relwidth=1, relheight=1)
         self.pack(fill=BOTH, expand=1)
+        self.update_graph()
         #self.init_buttons()
 
 
@@ -50,10 +52,11 @@ class Window(Frame):
         """Set the controller to Depth First Search"""
         self.controller.algorithm = model.MyGrid.dfs
 
-    def init_labels(self):
+    def update_graph(self):
         """Initialize labels for self."""
+        #TODO: Replace with grid from controller.
         grid = model.MyGrid()
-        background = Image.new("RGB", (self.width, self.height), color="red")
+        background = Image.new("RGB", (self.width, self.height), color="white")
         vertex_width = int(self.width / grid.cols)
         vertex_height = int(self.height / grid.rows)
         for vertex in grid.vertices:
@@ -61,9 +64,10 @@ class Window(Frame):
             vertex_image = ImageOps.expand(vertex_image, 1)
             background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
         render = ImageTk.PhotoImage(background)
-        self.label = Label(self, text="Hello", image=render)
+        self.label.configure(image=render)
         self.label.image = render
-        self.label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.label.pack()
+        self.after(1000, self.update_graph)
         return render
 
 
@@ -81,6 +85,7 @@ def make_view(show=False, controller=Controller()):
     root.geometry(str(width) + "x" + str(height))
     if show:
         root.mainloop()
+        root.after(1000, app.update_graph)
     return app
 
 if __name__ == "__main__":
