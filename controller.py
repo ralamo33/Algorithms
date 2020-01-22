@@ -21,6 +21,21 @@ class Controller:
         """Run an algorithm on the model."""
         return self.algorithm(self.model)
 
+    def get_rows(self):
+        """Get the number of rows of the model."""
+        return self.model.rows
+
+    def get_cols(self):
+        """Get the number of columns of the model."""
+        return self.model.cols
+
+    def get_verticies(self):
+        """
+        Get the verticies of the model.
+        :return: (List of Vertex)
+        """
+        return self.model.vertices
+
 
 
 

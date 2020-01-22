@@ -54,12 +54,11 @@ class Window(Frame):
 
     def update_graph(self):
         """Initialize labels for self."""
-        #TODO: Replace with grid from controller.
-        grid = model.MyGrid()
+        #TODO: Replace with self.grid from controller.
         background = Image.new("RGB", (self.width, self.height), color="white")
-        vertex_width = int(self.width / grid.cols)
-        vertex_height = int(self.height / grid.rows)
-        for vertex in grid.vertices:
+        vertex_width = int(self.width / self.controller.get_cols())
+        vertex_height = int(self.height / self.controller.get_rows())
+        for vertex in self.controller.get_verticies():
             vertex_image = Image.new("RGB", (vertex_width - 1, vertex_height - 1), color=vertex.get_color())
             vertex_image = ImageOps.expand(vertex_image, 1)
             background.paste(vertex_image, (vertex.x * vertex_width, vertex.y * vertex_height))
@@ -69,7 +68,6 @@ class Window(Frame):
         self.label.pack()
         self.after(1000, self.update_graph)
         return render
-
 
     def click_exit_button(self):
         exit()

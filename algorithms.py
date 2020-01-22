@@ -9,6 +9,7 @@ A*
 import collections
 import random
 from enum import Enum
+import time
 
 Coordinate = collections.namedtuple("coordinate", "x y")
 
@@ -31,7 +32,7 @@ class Graph:
         u.add_neighbor(v)
         v.add_neighbor(u)
 
-    def search(self, breadth):
+    def search(self, breadth, delay=False):
         """
             Use breadth or depth first search on the Entire graph.
             :param grid: (Graph) A two by two array.
@@ -48,7 +49,7 @@ class Graph:
                 self.little_dfs(vertex, visited)
         return visited
 
-    def little_search(self, vertex, visited, breadth):
+    def little_search(self, vertex, visited, breadth, delay=False):
         """
         Use breadth first search on vertex and its neighbors.
         :param vertex: (Vertex) The start of the search.
