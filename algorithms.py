@@ -33,10 +33,13 @@ class Graph:
         u.add_neighbor(v)
         v.add_neighbor(u)
 
-    def search(self, breadth, delay=False):
+    def dijstkra_algorithm(self):
+        """Use Distkra's algorithm to search through the graph."""
+
+
+    def search(self, breadth):
         """
             Use breadth or depth first search on the Entire graph.
-            :param grid: (Graph) A two by two array.
             :param breadth: (Boolean) If true, use bfs, if false use dfs
             :return: (List of Vertex) The verticies visited during the search
             """
@@ -75,7 +78,7 @@ class Graph:
                 visited.append(current)
                 #Delay changing the status so that the image shows a gradual change in the model.
                 current.change_status(Status.NORMAL_VISITED, len(visited))
-                for neighbor in current.neighbors:
+                for neighbor in current.get_neighbors():
                     planned.append(neighbor)
         return visited
 
@@ -113,7 +116,7 @@ class Graph:
             """
         return self.little_search(vertex, visited, False)
 
-    def reset(self, all):
+    def reset(self, all=False):
         """
         Set this graph back to before it committed a search.
         :param: all (Boolean) Reset every vertex of every status to normal.
@@ -131,6 +134,7 @@ class Graph:
         """
         for vertex in self.vertices:
             vertex.delay = 0
+
 
 class MyGrid:
     """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
@@ -170,7 +174,7 @@ class MyGrid:
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
 
-    def reset(self, all):
+    def reset(self, all=False):
         self.graph.reset(all)
 
     def search(self, breadth):
@@ -206,13 +210,13 @@ class Status(Enum):
     TARGET = "yellow"
     OBSTACLE = "black"
 
+Edge = collections.namedtuple("Edge", "neighbor distance")
 
 class Vertex:
     """A vertex of the undirected graph."""
 
-    def __init__(self, name, x=100, y=100, distance=random.randrange(10)):
+    def __init__(self, name, x=100, y=100):
         self.name = name
-        self.distance = distance
         self.neighbors = []
         self.x = x
         self.y = y
@@ -221,7 +225,13 @@ class Vertex:
         self.new_status = Status.NORMAL
 
     def add_neighbor(self, neighbor):
-        self.neighbors.append(neighbor)
+        distance = random.randrange(10)
+        self.neighbors.append(Edge(neighbor, distance))
+
+    def get_neighbors(self):
+        """Get the verticies adjacent to this."""
+        for edge in self.neighbors:
+            yield edge.neighbor
 
     def get_color(self):
         """Get self's color based on self.status"""
