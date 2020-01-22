@@ -13,6 +13,13 @@ class Controller:
         self.algorithm = model.Graph.bfs
         self.mutator = model.Status.NORMAL
 
+    def set_obstacle(self):
+        """Set the mutator as an obstacle."""
+        self.mutator = model.Status.OBSTACLE
+
+    def set_target(self):
+        self.mutator = model.Status.TARGET
+
     def mutate(self, x, y):
         """Mutate the tile of the given coordinates to the current mutator type."""
         self.model.mutate(model.Coordinate(x, y), self.mutator)
@@ -21,9 +28,13 @@ class Controller:
         """Immediately complete an algorithm run."""
         self.model.immediate_update()
 
+    def reset_all(self):
+        """Reset all Vertex in the graph to normal."""
+        self.model.reset(True)
+
     def reset(self):
-        """Reset the graph."""
-        self.model.reset()
+        """Reset all Vertex that were found to not found"""
+        self.model.reset(False)
 
     def run(self):
         """Run an algorithm on the model."""

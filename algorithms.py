@@ -22,6 +22,7 @@ class Graph:
         :param edges: (List of Tuple) pairs of verticies in an edge
         """
         self.vertices = vertices
+        self.found = False
         for edge in edges:
             self.add_edge(edge[0], edge[1])
 
@@ -43,6 +44,8 @@ class Graph:
         for vertex in self.vertices:
             if vertex in visited or vertex.status is Status.OBSTACLE:
                 continue
+            if self.found:
+                return visited
             if breadth:
                 self.little_bfs(vertex, visited)
             else:
@@ -66,6 +69,7 @@ class Graph:
                 current = planned.pop()
             if current.status is Status.TARGET:
                 visited.append(current)
+                self.found = True
                 return visited
             if current not in visited and current.status is Status.NORMAL:
                 visited.append(current)
@@ -109,13 +113,16 @@ class Graph:
             """
         return self.little_search(vertex, visited, False)
 
-    def reset(self):
+    def reset(self, all):
         """
         Set this graph back to before it committed a search.
+        :param: all (Boolean) Reset every vertex of every status to normal.
         :return: (Graph) self, indistinguishable from itself before mot recent search.
         """
+        self.found = False
         for vertex in self.vertices:
-            vertex.change_status(Status.NORMAL)
+            if all or vertex.new_status is Status.NORMAL_VISITED:
+                vertex.change_status(Status.NORMAL)
 
     def immediate_update(self):
         """
@@ -163,8 +170,8 @@ class MyGrid:
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
 
-    def reset(self):
-        self.graph.reset()
+    def reset(self, all):
+        self.graph.reset(all)
 
     def search(self, breadth):
         return self.graph.search(breadth)
@@ -191,8 +198,7 @@ class MyGrid:
         :param status: (Status) A vertex can be NORMAL, TARGET or OBSTACLE.
         :return: None
         """
-        self.vertex_by_coordinate.get(coordinate).status = status
-
+        self.vertex_by_coordinate.get(coordinate).change_status(status)
 class Status(Enum):
     """The status of a vertex. The vertex has a different status for each color."""
     NORMAL = "white"
