@@ -117,6 +117,14 @@ class Graph:
         for vertex in self.vertices:
             vertex.change_status(Status.NORMAL)
 
+    def immediate_update(self):
+        """
+        Immediately update every vertex to switch to its appropriate status.
+        :return: None
+        """
+        for vertex in self.vertices:
+            vertex.delay = 0
+
 class MyGrid:
     """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
     def __init__(self, rows=10, cols=10):
@@ -169,6 +177,13 @@ class MyGrid:
         """Depth first search"""
         return self.graph.dfs()
 
+    def immediate_update(self):
+        """
+        Immediately make every change to each vertex's status.
+        :return: None
+        """
+        self.graph.immediate_update()
+
     def mutate(self, coordinate, status):
         """
         Mutate the vertex of the given coordinates to have the given status.
@@ -181,7 +196,7 @@ class MyGrid:
 class Status(Enum):
     """The status of a vertex. The vertex has a different status for each color."""
     NORMAL = "white"
-    NORMAL_VISITED = "red"
+    NORMAL_VISITED = "blue"
     TARGET = "yellow"
     OBSTACLE = "black"
 

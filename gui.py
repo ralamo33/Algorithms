@@ -36,6 +36,7 @@ class Window(Frame):
         self.master.config(menu=self.menu)
         self.game_mode = Menu(self.menu)
         self.game_mode.add_command(label="Run", command=self.controller.run)
+        self.game_mode.add_command(label="Solve Now!", command=self.controller.immediate_update)
         self.game_mode.add_command(label="Reset", command=self.controller.reset)
         self.menu.add_cascade(label="Game Mode", menu=self.game_mode)
         self.algorithm = Menu(self.menu)

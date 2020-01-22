@@ -17,6 +17,10 @@ class Controller:
         """Mutate the tile of the given coordinates to the current mutator type."""
         self.model.mutate(model.Coordinate(x, y), self.mutator)
 
+    def immediate_update(self):
+        """Immediately complete an algorithm run."""
+        self.model.immediate_update()
+
     def reset(self):
         """Reset the graph."""
         self.model.reset()
