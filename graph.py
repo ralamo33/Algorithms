@@ -2,7 +2,6 @@
 This operates as the model.
 
 Desired algorithms:
-Dijstrka's Algorithm
 Kruskal Algorithm
 A*
 """
@@ -12,6 +11,10 @@ from enum import Enum
 import time
 
 Coordinate = collections.namedtuple("coordinate", "x y")
+Edge = collections.namedtuple("Edge", "neighbor distance")
+#The maximum distance between two edges in the graph
+MAX = 99999999999999999
+
 
 class Graph:
     """A graph of verticies and edges."""
@@ -33,9 +36,135 @@ class Graph:
         u.add_neighbor(v)
         v.add_neighbor(u)
 
-    def dijstkra_algorithm(self):
-        """Use Distkra's algorithm to search through the graph."""
+    def get_target(self):
+        target = self.vertices[len(self.vertices) - 1]
+        for vertex in self.vertices:
+            if vertex.get_status() is Status.TARGET:
+                target = vertex
+        return target
 
+    #DOES NOT WORK
+    #WRONG ALGORITHM TO CHOOSE. REVERSE THIS DECISION.
+    def kruskal_algorithm(self):
+        #TODo: Standarize naming conventions between algorithms.
+        """
+        Use Kruskal's algorithm to search through the entire graph.
+        Note, this does not care about Vertex's that are starting, and does not terminate with target Vertex's.
+        :return:
+        """
+        KruskalEdge = collections.namedtuple("KruskalEdge", "start end weight")
+        obstacles = 0
+        edges = []
+        path = []
+        for vertex in self.vertices:
+            if vertex.status is not Status.OBSTACLE:
+                for edge in vertex.edges:
+                    if edge.neighbor.status is not Status.OBSTACLE:
+                        edges.append(KruskalEdge(vertex, edge.neighbor, edge.distance))
+            else:
+                obstacles += 1
+        while len(edges) > 0:
+            #ToDO: Fix edges so that there aren't two edges of different weight between the same two verticies.
+            current = self.min_edge(edges)
+            edges.remove(current)
+            path.append(current.start)
+            path.append(current.end)
+            if current.start.get_status() is Status.NORMAL:
+                current.start.change_status(Status.NORMAL_VISITED, len(path))
+            if current.end.get_status() is Status.NORMAL:
+                current.end.change_status(Status.NORMAL_VISITED, len(path))
+        return path
+
+    def min_edge(self, edges):
+        """
+        Find the edge of least distance.
+        :param edges: The edges generated.
+        :return: (KruskalEdge) The one with the least distance.
+        """
+        min = MAX
+        current = None
+        for edge in edges:
+            if edge.weight < min:
+                min = edge.weight
+                current = edge
+        return current
+
+    def a_star_algorithm(self):
+        """Use the a* algorithm to find the target.
+        Will stop if unfindable.
+        """
+
+
+    def dijkstra_algorithm(self):
+        """Use Dijkstra's algorithm to search through the graph.
+        Will only search through parts that are connected to self.get_start()
+        Will not through the entirety of non-connected graph.
+        """
+        found = []
+        missing = self.vertices.copy()
+        distances = dict()
+        start = self.get_start()
+        distances.update({start : 0})
+        while len(missing) > 0:
+            current = self.get_min(distances, found)
+            if current is None:
+                return found
+            found.append(current)
+            missing.remove(current)
+            if current.get_status() is Status.TARGET:
+                return found
+            if current.get_status() is Status.NORMAL:
+               current.change_status(Status.NORMAL_VISITED, len(found))
+            for edge in current.edges:
+                distance = distances.get(current) + edge.distance
+                if distance < distances.get(edge.neighbor, MAX):
+                    distances.update({edge.neighbor : edge.distance})
+        return found
+
+
+
+    def prim_algorithm(self):
+        """Use Prim's algorithm to search through the graph.
+        Will only search through parts that are connected to self.get_start()
+        Will not through the entirety of non-connected graph.
+        """
+        found = []
+        distances = dict()
+        for vertex in self.vertices:
+            if vertex.status is not Status.OBSTACLE:
+                distances.update({vertex : MAX})
+        start = self.get_start()
+        distances.update({start : 0})
+        while len(distances) > 0:
+            current = self.get_min(distances)
+            #The path is unreachable.
+            if current is None:
+                return
+            found.append(current)
+            del distances[current]
+            if current.get_status() is Status.TARGET:
+                return found
+            if current.get_status() is Status.NORMAL:
+                current.change_status(Status.NORMAL_VISITED, len(found))
+            for edge in current.edges:
+                if edge.distance < distances.get(edge.neighbor, 0):
+                    distances.update({edge.neighbor : edge.distance})
+
+    def get_min(self, distances, found=[]):
+        """
+        Get the vertex that is the least distance.
+        :param distances: Dict(Vertex, int) The vertex and its distance.
+        :return: (Vertex) the vertex with the least distance.
+        """
+        closest = None
+        min = MAX
+        for vertex, distance in distances.items():
+            if vertex in found:
+                continue
+            if distance < min:
+                min = distance
+                closest = vertex
+        return closest
 
     def search(self, breadth):
         """
@@ -44,6 +173,10 @@ class Graph:
             :return: (List of Vertex) The verticies visited during the search
             """
         visited = []
+        if breadth:
+            self.little_bfs(self.get_start(), visited)
+        else:
+            self.little_dfs(self.get_start(), visited)
         for vertex in self.vertices:
             if vertex in visited or vertex.status is Status.OBSTACLE:
                 continue
@@ -54,6 +187,13 @@ class Graph:
             else:
                 self.little_dfs(vertex, visited)
         return visited
+
+    def get_start(self):
+        start = self.vertices[0]
+        for vertex in self.vertices:
+            if vertex.get_status() is Status.START:
+                start = vertex
+        return start
 
     def little_search(self, vertex, visited, breadth, delay=False):
         """
@@ -74,10 +214,10 @@ class Graph:
                 visited.append(current)
                 self.found = True
                 return visited
-            if current not in visited and current.status is Status.NORMAL:
+            if current not in visited and (current.status is Status.NORMAL or current.status is Status.START):
                 visited.append(current)
-                #Delay changing the status so that the image shows a gradual change in the model.
-                current.change_status(Status.NORMAL_VISITED, len(visited))
+                if current.status is Status.NORMAL:
+                    current.change_status(Status.NORMAL_VISITED, len(visited))
                 for neighbor in current.get_neighbors():
                     planned.append(neighbor)
         return visited
@@ -85,7 +225,6 @@ class Graph:
     def bfs(self):
         """
         Use breadth first search on the Entire graph.
-        :param grid: (Graph) A two by two array.
         :return: (List of Vertex) The verticies visited during the search
         """
         return self.search(True)
@@ -136,8 +275,8 @@ class Graph:
             vertex.delay = 0
 
 
-class MyGrid:
-    """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
+class MyGrid(Graph):
+    """An extension of Graph using inheritance. Grid represents a 2 by 2 grid as a connected graph"""
     def __init__(self, rows=10, cols=10):
         """
         Create a two by two grid.
@@ -174,27 +313,6 @@ class MyGrid:
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
 
-    def reset(self, all=False):
-        self.graph.reset(all)
-
-    def search(self, breadth):
-        return self.graph.search(breadth)
-
-    def bfs(self):
-        """Breadth first search"""
-        return self.graph.bfs()
-
-    def dfs(self):
-        """Depth first search"""
-        return self.graph.dfs()
-
-    def immediate_update(self):
-        """
-        Immediately make every change to each vertex's status.
-        :return: None
-        """
-        self.graph.immediate_update()
-
     def mutate(self, coordinate, status):
         """
         Mutate the vertex of the given coordinates to have the given status.
@@ -203,21 +321,23 @@ class MyGrid:
         :return: None
         """
         self.vertex_by_coordinate.get(coordinate).change_status(status)
+
+
 class Status(Enum):
     """The status of a vertex. The vertex has a different status for each color."""
     NORMAL = "white"
     NORMAL_VISITED = "blue"
     TARGET = "yellow"
     OBSTACLE = "black"
+    START = "red"
 
-Edge = collections.namedtuple("Edge", "neighbor distance")
 
 class Vertex:
     """A vertex of the undirected graph."""
 
     def __init__(self, name, x=100, y=100):
         self.name = name
-        self.neighbors = []
+        self.edges = []
         self.x = x
         self.y = y
         self.delay = 0
@@ -226,11 +346,11 @@ class Vertex:
 
     def add_neighbor(self, neighbor):
         distance = random.randrange(10)
-        self.neighbors.append(Edge(neighbor, distance))
+        self.edges.append(Edge(neighbor, distance))
 
     def get_neighbors(self):
         """Get the verticies adjacent to this."""
-        for edge in self.neighbors:
+        for edge in self.edges:
             yield edge.neighbor
 
     def get_color(self):
@@ -248,6 +368,7 @@ class Vertex:
             self.delay -= 1
         return self.status
 
+    #ToDo: Change to set_visited()
     def change_status(self, new_status, delay=0):
         """
         Change self's status to new_status after status has been asked for delay times.
@@ -259,23 +380,6 @@ class Vertex:
         self.new_status = new_status
         return new_status
 
-
-
-    """def draw(self, width, height):
-        display = Image.new("RGB", (width, height), self.color)
-        return ImageOps.expand(display, 1)"""
-
-def display(verticies):
-    """
-    Display the given onto the console.
-    :param verticies: (List of Vertex)
-    :return:
-    """
-    for vertex in verticies:
-        print(vertex.x, vertex.y)
-
-
 if __name__ == "__main__":
-    grid = MyGrid()
-    pass
-
+    g = MyGrid()
+    g.dijkstra_algorithm()

@@ -1,7 +1,7 @@
 """The controller that communicates between algorithms and the view."""
 from tkinter import Label
 
-import algorithms as model
+import graph as model
 from enum import Enum
 import PIL
 
@@ -19,6 +19,24 @@ class Controller:
 
     def set_target(self):
         self.mutator = model.Status.TARGET
+
+    def set_normal(self):
+        self.mutator = model.Status.NORMAL
+
+    def set_start(self):
+        self.mutator = model.Status.START
+        
+    def set_dfs(self):
+        self.algorithm = model.Graph.dfs
+        
+    def set_bfs(self):
+        self.algorithm = model.Graph.bfs
+
+    def set_prim(self):
+        self.algorithm = model.Graph.prim_algorithm
+
+    def set_dijkstra(self):
+        self.algorithm = model.MyGrid.dijkstra_algorithm
 
     def mutate(self, x, y):
         """Mutate the tile of the given coordinates to the current mutator type."""

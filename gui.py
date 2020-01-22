@@ -6,7 +6,6 @@ from controller import Controller
 
 from PIL import ImageTk
 from PIL import Image, ImageOps
-import algorithms as model
 
 class Window(Frame):
     def __init__(self, master, control, width=500, height=500):
@@ -45,22 +44,17 @@ class Window(Frame):
         self.game_mode.add_command(label="Reset", command=self.controller.reset)
         self.menu.add_cascade(label="Game", menu=self.game_mode)
         self.algorithm = Menu(self.menu)
-        self.algorithm.add_command(label="Breadth First Search", command=self.set_bfs)
-        self.algorithm.add_command(label="Depth First Search", command=self.set_dfs)
+        self.algorithm.add_command(label="Breadth First Search", command=self.controller.set_bfs)
+        self.algorithm.add_command(label="Depth First Search", command=self.controller.set_dfs)
+        self.algorithm.add_command(label="Prim Algorithm", command=self.controller.set_prim)
+        self.algorithm.add_command(label="Dijkstra Algorithm", command=self.controller.set_dijkstra)
         self.menu.add_cascade(label="Algorithm", menu=self.algorithm)
         self.selector = Menu(self.menu)
         self.selector.add_command(label="Make target", command=self.controller.set_target)
         self.selector.add_command(label="Make obstacle", command=self.controller.set_obstacle)
+        self.selector.add_command(label="Make unsearched", command=self.controller.set_normal)
+        self.selector.add_command(label="Make start", command=self.controller.set_start)
         self.menu.add_cascade(label="Selector", menu=self.selector)
-
-
-    def set_bfs(self):
-        """Set the controller to Breadth First Search"""
-        self.controller.algorithm = model.MyGrid.bfs
-
-    def set_dfs(self):
-        """Set the controller to Depth First Search"""
-        self.controller.algorithm = model.MyGrid.dfs
 
     def update_graph(self):
         """Initialize labels for self."""
@@ -74,7 +68,7 @@ class Window(Frame):
         self.label.configure(image=render)
         self.label.image = render
         self.label.pack()
-        self.after(100, self.update_graph)
+        self.after(10, self.update_graph)
         return render
 
     def click_exit_button(self):

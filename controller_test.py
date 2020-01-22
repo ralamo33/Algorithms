@@ -1,6 +1,6 @@
 import unittest
 from controller import *
-from algorithms import *
+from graph import *
 from gui import *
 
 

@@ -1,5 +1,5 @@
 import unittest
-from algorithms import *
+from graph import *
 
 class MyTestCase(unittest.TestCase):
     v1 = Vertex("A")
