@@ -36,8 +36,7 @@ class Window(Frame):
         self.master.config(menu=self.menu)
         self.game_mode = Menu(self.menu)
         self.game_mode.add_command(label="Run", command=self.controller.run)
-        self.game_mode.add_command(label="Search islands.")
-        self.game_mode.add_command(label="Search for gold.")
+        self.game_mode.add_command(label="Reset", command=self.controller.reset)
         self.menu.add_cascade(label="Game Mode", menu=self.game_mode)
         self.algorithm = Menu(self.menu)
         self.algorithm.add_command(label="Breadth First Search", command=self.set_bfs)
@@ -66,7 +65,7 @@ class Window(Frame):
         self.label.configure(image=render)
         self.label.image = render
         self.label.pack()
-        self.after(1000, self.update_graph)
+        self.after(100, self.update_graph)
         return render
 
     def click_exit_button(self):

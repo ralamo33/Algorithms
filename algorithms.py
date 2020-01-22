@@ -69,7 +69,8 @@ class Graph:
                 return visited
             if current not in visited and current.status is Status.NORMAL:
                 visited.append(current)
-                current.status = Status.NORMAL_VISITED
+                #Delay changing the status so that the image shows a gradual change in the model.
+                current.change_status(Status.NORMAL_VISITED, len(visited))
                 for neighbor in current.neighbors:
                     planned.append(neighbor)
         return visited
@@ -114,8 +115,7 @@ class Graph:
         :return: (Graph) self, indistinguishable from itself before mot recent search.
         """
         for vertex in self.vertices:
-            if vertex.status is Status.NORMAL_VISITED:
-                vertex.status = Status.NORMAL
+            vertex.change_status(Status.NORMAL)
 
 class MyGrid:
     """An extension of Graph using compisition. Grid represents a 2 by 2 grid as a connected graph"""
@@ -155,6 +155,9 @@ class MyGrid:
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
 
+    def reset(self):
+        self.graph.reset()
+
     def search(self, breadth):
         return self.graph.search(breadth)
 
@@ -192,14 +195,40 @@ class Vertex:
         self.neighbors = []
         self.x = x
         self.y = y
+        self.delay = 0
         self.status = Status.NORMAL
+        self.new_status = Status.NORMAL
 
     def add_neighbor(self, neighbor):
         self.neighbors.append(neighbor)
 
     def get_color(self):
         """Get self's color based on self.status"""
-        return self.status.value
+        return self.get_status().value
+
+    def get_status(self):
+        """
+        Get the current status. Then change self status if the delay is up.
+        :return: The current status, which may be different from self.new_status
+        """
+        if self.delay <= 0:
+            self.status = self.new_status
+        else:
+            self.delay -= 1
+        return self.status
+
+    def change_status(self, new_status, delay=0):
+        """
+        Change self's status to new_status after status has been asked for delay times.
+        :param delay: The number of times status should be asked for before it is changed.
+        :param new_status: What the status should be changed to.
+        :return: The new status, even if it has not yet come into effect.
+        """
+        self.delay = delay
+        self.new_status = new_status
+        return new_status
+
+
 
     """def draw(self, width, height):
         display = Image.new("RGB", (width, height), self.color)
