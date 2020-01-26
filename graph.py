@@ -28,6 +28,7 @@ class Graph:
         self.found = False
         for edge in edges:
             self.add_edge(edge[0], edge[1])
+        self.start = self.vertices[0]
 
     def add_vertex(self, vertex):
         self.vertices.append(vertex)
@@ -189,11 +190,7 @@ class Graph:
         return visited
 
     def get_start(self):
-        start = self.vertices[0]
-        for vertex in self.vertices:
-            if vertex.get_status() is Status.START:
-                start = vertex
-        return start
+        return self.start
 
     def little_search(self, vertex, visited, breadth, delay=False):
         """
@@ -312,6 +309,8 @@ class MyGrid(Graph):
                 edges.append((vertex, other))
         self.edges = edges
         self.graph = Graph(self.vertices, self.edges)
+        self.start = self.vertex_by_coordinate.get(Coordinate(0, 0))
+        self.targets = []
 
     def mutate(self, coordinate, status):
         """
@@ -320,7 +319,13 @@ class MyGrid(Graph):
         :param status: (Status) A vertex can be NORMAL, TARGET or OBSTACLE.
         :return: None
         """
-        self.vertex_by_coordinate.get(coordinate).change_status(status)
+        mutate = self.vertex_by_coordinate.get(coordinate)
+        if status is Status.TARGET:
+            self.targets.append(mutate)
+        elif status is Status.START:
+            self.start.change_status(Status.NORMAL)
+            self.start = mutate
+        mutate.change_status(status)
 
 
 class Status(Enum):
