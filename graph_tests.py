@@ -44,6 +44,5 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(self.graph2.dfs(), [self.u1, self.u2, self.u3, self.u6, self.u7, self.u8, self.u4, self.u5])
         self.graph2.reset()
 
-
 if __name__ == '__main__':
     unittest.main()

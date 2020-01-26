@@ -48,6 +48,7 @@ class Window(Frame):
         self.algorithm.add_command(label="Depth First Search", command=self.controller.set_dfs)
         self.algorithm.add_command(label="Prim Algorithm", command=self.controller.set_prim)
         self.algorithm.add_command(label="Dijkstra Algorithm", command=self.controller.set_dijkstra)
+        self.algorithm.add_command(label="A Star Algorithm", command=self.controller.set_a_star)
         self.menu.add_cascade(label="Algorithm", menu=self.algorithm)
         self.selector = Menu(self.menu)
         self.selector.add_command(label="Make target", command=self.controller.set_target)

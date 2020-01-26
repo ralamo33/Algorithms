@@ -38,6 +38,9 @@ class Controller:
     def set_dijkstra(self):
         self.algorithm = model.MyGrid.dijkstra_algorithm
 
+    def set_a_star(self):
+        self.algorithm = model.MyGrid.a_star_algorithm
+
     def mutate(self, x, y):
         """Mutate the tile of the given coordinates to the current mutator type."""
         self.model.mutate(model.Coordinate(x, y), self.mutator)
