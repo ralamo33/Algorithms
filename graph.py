@@ -15,7 +15,6 @@ Edge = collections.namedtuple("Edge", "neighbor distance")
 #The maximum distance between two edges in the graph
 MAX = 99999999999999999
 
-
 class Graph:
     """A graph of verticies and edges."""
 
@@ -37,17 +36,20 @@ class Graph:
         u.add_neighbor(v)
         v.add_neighbor(u)
 
-    def get_target(self):
-        target = self.vertices[len(self.vertices) - 1]
+    def get_targets(self):
+        """
+        Get the number of targets in this graph.
+        :return: (int) The number of targets int he graph.
+        """
+        targets = 0
         for vertex in self.vertices:
-            if vertex.get_status() is Status.TARGET:
-                target = vertex
-        return target
+            if vertex.status is Status.TARGET:
+                targets += 1
+        return targets
 
     #DOES NOT WORK
     #WRONG ALGORITHM TO CHOOSE. REVERSE THIS DECISION.
     def kruskal_algorithm(self):
-        #TODo: Standarize naming conventions between algorithms.
         """
         Use Kruskal's algorithm to search through the entire graph.
         Note, this does not care about Vertex's that are starting, and does not terminate with target Vertex's.
@@ -101,26 +103,27 @@ class Graph:
         Will only search through parts that are connected to self.get_start()
         Will not through the entirety of non-connected graph.
         """
-        found = []
+        visited = []
+        find = self.get_targets()
         missing = self.vertices.copy()
         distances = dict()
         start = self.get_start()
         distances.update({start : 0})
-        while len(missing) > 0:
-            current = self.get_min(distances, found)
+        while len(missing) > 0 and find > 0:
+            current = self.get_min(distances, visited)
             if current is None:
-                return found
-            found.append(current)
+                return visited
+            visited.append(current)
             missing.remove(current)
             if current.get_status() is Status.TARGET:
-                return found
+                find -= 1
             if current.get_status() is Status.NORMAL:
-               current.change_status(Status.NORMAL_VISITED, len(found))
+               current.change_status(Status.NORMAL_VISITED, len(visited))
             for edge in current.edges:
                 distance = distances.get(current) + edge.distance
                 if distance < distances.get(edge.neighbor, MAX):
                     distances.update({edge.neighbor : edge.distance})
-        return found
+        return visited
 
 
 
@@ -129,29 +132,30 @@ class Graph:
         Will only search through parts that are connected to self.get_start()
         Will not through the entirety of non-connected graph.
         """
-        found = []
+        visited = []
+        find = self.get_targets()
         distances = dict()
         for vertex in self.vertices:
             if vertex.status is not Status.OBSTACLE:
                 distances.update({vertex : MAX})
         start = self.get_start()
         distances.update({start : 0})
-        while len(distances) > 0:
+        while len(distances) > 0 and find > 0:
             current = self.get_min(distances)
             #The path is unreachable.
             if current is None:
                 return
-            found.append(current)
+            visited.append(current)
             del distances[current]
             if current.get_status() is Status.TARGET:
-                return found
+                find -= 1
             if current.get_status() is Status.NORMAL:
-                current.change_status(Status.NORMAL_VISITED, len(found))
+                current.change_status(Status.NORMAL_VISITED, len(visited))
             for edge in current.edges:
                 if edge.distance < distances.get(edge.neighbor, 0):
                     distances.update({edge.neighbor : edge.distance})
 
-    def get_min(self, distances, found=[]):
+    def get_min(self, distances, visited=[]):
         """
         Get the vertex that is the least distance.
         :param distances: Dict(Vertex, int) The vertex and its distance.
@@ -160,7 +164,7 @@ class Graph:
         closest = None
         min = MAX
         for vertex, distance in distances.items():
-            if vertex in found:
+            if vertex in visited:
                 continue
             if distance < min:
                 min = distance
@@ -174,6 +178,7 @@ class Graph:
             :return: (List of Vertex) The verticies visited during the search
             """
         visited = []
+        self.find = self.get_targets()
         if breadth:
             self.little_bfs(self.get_start(), visited)
         else:
@@ -181,38 +186,39 @@ class Graph:
         for vertex in self.vertices:
             if vertex in visited or vertex.status is Status.OBSTACLE:
                 continue
-            if self.found:
+            if self.find == 0:
                 return visited
             if breadth:
                 self.little_bfs(vertex, visited)
             else:
                 self.little_dfs(vertex, visited)
+        print(self.find)
         return visited
 
     def get_start(self):
         return self.start
 
-    def little_search(self, vertex, visited, breadth, delay=False):
+    def little_search(self, vertex, visited, breadth):
         """
         Use breadth first search on vertex and its neighbors.
         :param vertex: (Vertex) The start of the search.
         :param visited: (List of Vertex) Verticies that have alreaddy been visited.
         :param breadth: (Boolean) Use bfs if trues, use dfs otherwise
+        :param find: (int) The number of targets left to find in self
         :return: The Verticies that were visited.
         """
         planned = collections.deque()
         planned.append(vertex)
-        while len(planned) > 0:
+        while len(planned) > 0 and self.find > 0:
             if breadth:
                 current = planned.popleft()
             else:
                 current = planned.pop()
-            if current.status is Status.TARGET:
+
+            if current not in visited and (current.status is not Status.OBSTACLE):
                 visited.append(current)
-                self.found = True
-                return visited
-            if current not in visited and (current.status is Status.NORMAL or current.status is Status.START):
-                visited.append(current)
+                if current.status is Status.TARGET:
+                    self.find -= 1
                 if current.status is Status.NORMAL:
                     current.change_status(Status.NORMAL_VISITED, len(visited))
                 for neighbor in current.get_neighbors():
@@ -320,8 +326,8 @@ class MyGrid(Graph):
         :return: None
         """
         mutate = self.vertex_by_coordinate.get(coordinate)
-        if status is Status.TARGET:
-            self.targets.append(mutate)
+        if mutate is None:
+            return
         elif status is Status.START:
             self.start.change_status(Status.NORMAL)
             self.start = mutate
