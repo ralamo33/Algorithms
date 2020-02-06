@@ -6,16 +6,13 @@ from controller import Controller
 
 from PIL import ImageTk
 from PIL import Image, ImageOps
+import math
 
 class Window(Frame):
     def __init__(self, master, control, width=100, height=100):
         Frame.__init__(self, master)
         self.master = master
         self.controller = control
-        self.width = width
-        self.height = height
-        self.vertex_width = int(self.width / self.controller.get_cols())
-        self.vertex_height = int(self.height / self.controller.get_rows())
         self.history = []
         self.init_menus()
         self.label = Label(self)
@@ -52,21 +49,23 @@ class Window(Frame):
     def update_graph(self):
         """Initialize labels for self."""
         #TODO: Replace with self.grid from controller.
-        background = Image.new("RGB", (self.width, self.height), color="white")
+        total_width = self.label.winfo_width()
+        total_height = self.label.winfo_height()
+        vertex_width = math.floor(total_width / self.controller.get_cols())
+        vertex_height = math.floor(total_height / self.controller.get_rows())
+        background = Image.new("RGB", (total_width, total_height), color="white")
         for vertex in self.controller.get_verticies():
-            total_width = vertex.x * self.vertex_width
-            total_height = vertex.y * self.vertex_height
-            vertex_image = Image.new("RGB", (self.vertex_width - 1, self.vertex_height - 1), color=vertex.get_color())
+            vertex_image = Image.new("RGB", (vertex_width, vertex_height), color=vertex.get_color())
             if vertex.visited:
                 vertex_image.paste(Image.new("RGB", (int(self.vertex_width / 5), int(self.vertex_height / 5)), color="green"),
                                    (round(self.vertex_width / 2), round(self.vertex_height / 2)))
             vertex_image = ImageOps.expand(vertex_image, 1)
-            background.paste(vertex_image, (total_width, total_height))
+            background.paste(vertex_image, (vertex_width * vertex.x, vertex_height * vertex.y))
         render = ImageTk.PhotoImage(background)
         self.label.configure(image=render)
         self.label.image = render
         self.label.pack()
-        self.after(10, self.update_graph)
+        self.after(1, self.update_graph)
         return render
 
     def click_exit_button(self):

@@ -399,7 +399,7 @@ class Vertex:
         self.x = x
         self.y = y
         self.delay = 0
-        self.visited = True
+        self.visited = False
         self.status = Status.NORMAL
         self.new_status = Status.NORMAL
 
