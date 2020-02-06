@@ -8,7 +8,7 @@ from PIL import ImageTk
 from PIL import Image, ImageOps
 
 class Window(Frame):
-    def __init__(self, master, control, width=500, height=500):
+    def __init__(self, master, control, width=100, height=100):
         Frame.__init__(self, master)
         self.master = master
         self.controller = control
