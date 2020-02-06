@@ -36,9 +36,10 @@ class Graph:
 
     def run(self):
         """
-        Run the algorithm in self.alogrithm
-        :return:
+        Run the algorithm in self.alogrithm.
+        :return: The list of Vertex that were found by the algoirthm.
         """
+        self.searching = True
         return self.algorithm()
 
     def add_vertex(self, vertex):
@@ -53,6 +54,7 @@ class Graph:
         Get the number of targets in this graph. Or if there are none return 1, ensuring the search does not end early.
         :return: (int) The number of targets in the graph.
         """
+        print(len(self.targets))
         if len(self.targets) == 0:
             return 1
         return len(self.targets)
@@ -77,7 +79,6 @@ class Graph:
         Will only search through parts that are connected to self.get_start()
         Will not through the entirety of non-connected graph.
         """
-        self.searching = True
         visited = []
         find = self.get_targets()
         missing = self.vertices.copy()
@@ -107,7 +108,6 @@ class Graph:
         Will only search through parts that are connected to self.get_start()
         Will not through the entirety of non-connected graph.
         """
-        self.searching = True
         visited = []
         find = self.get_targets()
         distances = dict()
@@ -156,7 +156,6 @@ class Graph:
         self.searching = True
         visited = []
         self.find = self.get_targets()
-        print(self.find)
         if breadth:
             self.little_bfs(self.get_start(), visited)
         else:
@@ -170,7 +169,6 @@ class Graph:
                 self.little_bfs(vertex, visited)
             else:
                 self.little_dfs(vertex, visited)
-        print(self.find)
         return visited
 
     def get_start(self):
@@ -192,10 +190,9 @@ class Graph:
                 current = planned.popleft()
             else:
                 current = planned.pop()
-
             if current not in visited and (current.status is not Status.OBSTACLE):
                 visited.append(current)
-                if current.status is Status.TARGET:
+                if current.status is Status.TARGET or current in self.targets:
                     self.find -= 1
                 if current.status is Status.NORMAL:
                     current.change_status(Status.NORMAL_VISITED, len(visited))
@@ -314,11 +311,20 @@ class MyGrid(Graph):
             return
         if status is Status.TARGET:
             self.targets.add(mutate)
-        elif mutate in self.targets: self.targets.remove(mutate)
+        elif mutate in self.targets:
+            self.targets.remove(mutate)
         if status is Status.START:
             self.start.change_status(Status.NORMAL)
             self.start = mutate
         mutate.change_status(status)
+        self.immediate_update()
+        if self.searching:
+            for vertex in self.vertices:
+                if vertex.status is Status.NORMAL_VISITED:
+                    vertex.status is Status.NORMAL
+            self.run()
+            self.immediate_update()
+
 
     def a_star_algorithm(self):
         """Use the a* algorithm to find the target.
@@ -326,7 +332,6 @@ class MyGrid(Graph):
         g (int) the cost to travel to that cell
         h (double) the distance between this vector and the target
         """
-        self.searching = True
         delay = 0
         open = dict()
         closed = []
@@ -434,6 +439,8 @@ class Vertex:
         """
         self.delay = delay
         self.new_status = new_status
+        if delay == 0:
+            self.status = new_status
         return new_status
 
 if __name__ == "__main__":
