@@ -10,7 +10,6 @@ class Controller:
 
     def __init__(self, graph=model.MyGrid()):
         self.model = graph
-        self.algorithm = model.Graph.bfs
         self.mutator = model.Status.NORMAL
 
     def set_obstacle(self):
@@ -27,19 +26,19 @@ class Controller:
         self.mutator = model.Status.START
         
     def set_dfs(self):
-        self.algorithm = model.Graph.dfs
+        self.model.algorithm = self.model.dfs
         
     def set_bfs(self):
-        self.algorithm = model.Graph.bfs
+        self.model.algorithm = self.model.bfs
 
     def set_prim(self):
-        self.algorithm = model.Graph.prim_algorithm
+        self.model.algorithm = self.model.prim_algorithm
 
     def set_dijkstra(self):
-        self.algorithm = model.MyGrid.dijkstra_algorithm
+        self.model.algorithm = self.model.dijkstra_algorithm
 
     def set_a_star(self):
-        self.algorithm = model.MyGrid.a_star_algorithm
+        self.model.algorithm = self.model.a_star_algorithm
 
     def mutate(self, x, y):
         """Mutate the tile of the given coordinates to the current mutator type."""
