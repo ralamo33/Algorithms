@@ -244,6 +244,7 @@ class Graph:
                 vertex.h = MAX
                 vertex.g = MAX
 
+
     def immediate_update(self):
         """
         Immediately update every vertex to switch to its appropriate status.

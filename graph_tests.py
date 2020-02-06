@@ -1,6 +1,7 @@
 import unittest
 from graph import *
 
+
 class MyTestCase(unittest.TestCase):
     v1 = Vertex("A")
     v2 = Vertex("B")

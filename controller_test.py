@@ -24,6 +24,7 @@ class MyTestCase(unittest.TestCase):
 
 
 
+
     def test_mutate(self):
         c = Controller()
         c.mutator = Status.OBSTACLE
