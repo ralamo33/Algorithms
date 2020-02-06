@@ -24,14 +24,6 @@ class Window(Frame):
         self.label.bind('<B1-Motion>', self.mutate_vertex)
         self.pack(fill=BOTH, expand=1)
         self.update_graph()
-        #self.init_buttons()
-
-
-
-    def init_buttons(self):
-        """Intilize buttons for self."""
-        self.exitButton = Button(self, text="Exit", command=self.click_exit_button)
-        self.exitButton.place(x=0, y=0)
 
     def init_menus(self):
         """Initialize menus for self."""
@@ -62,9 +54,14 @@ class Window(Frame):
         #TODO: Replace with self.grid from controller.
         background = Image.new("RGB", (self.width, self.height), color="white")
         for vertex in self.controller.get_verticies():
+            total_width = vertex.x * self.vertex_width
+            total_height = vertex.y * self.vertex_height
             vertex_image = Image.new("RGB", (self.vertex_width - 1, self.vertex_height - 1), color=vertex.get_color())
+            if vertex.visited:
+                vertex_image.paste(Image.new("RGB", (int(self.vertex_width / 5), int(self.vertex_height / 5)), color="green"),
+                                   (round(self.vertex_width / 2), round(self.vertex_height / 2)))
             vertex_image = ImageOps.expand(vertex_image, 1)
-            background.paste(vertex_image, (vertex.x * self.vertex_width, vertex.y * self.vertex_height))
+            background.paste(vertex_image, (total_width, total_height))
         render = ImageTk.PhotoImage(background)
         self.label.configure(image=render)
         self.label.image = render
