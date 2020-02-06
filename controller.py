@@ -59,7 +59,7 @@ class Controller:
 
     def run(self):
         """Run an algorithm on the model."""
-        return self.algorithm(self.model)
+        return self.model.run()
 
     def get_rows(self):
         """Get the number of rows of the model."""

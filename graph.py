@@ -31,7 +31,15 @@ class Graph:
             self.add_edge(edge[0], edge[1])
         self.start = self.vertices[0]
         self.targets = set()
+        self.algorithm = self.bfs
         self.searching = False
+
+    def run(self):
+        """
+        Run the algorithm in self.alogrithm
+        :return:
+        """
+        return self.algorithm()
 
     def add_vertex(self, vertex):
         self.vertices.append(vertex)
@@ -290,7 +298,7 @@ class MyGrid(Graph):
                 other = self.vertex_by_coordinate.get(Coordinate(cord.x, cord.y + 1))
                 edges.append((vertex, other))
         self.edges = edges
-        self.graph = Graph(self.vertices, self.edges)
+        super().__init__(self.vertices, self.edges)
         self.start = self.vertex_by_coordinate.get(Coordinate(0, 0))
         self.targets = set()
 
