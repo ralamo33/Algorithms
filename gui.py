@@ -13,6 +13,8 @@ class Window(Frame):
         Frame.__init__(self, master)
         self.master = master
         self.controller = control
+        self.vertex_width = 0;
+        self.vertex_height = 0;
         self.history = []
         self.init_menus()
         self.label = Label(self)
@@ -49,18 +51,19 @@ class Window(Frame):
     def update_graph(self):
         """Initialize labels for self."""
         #TODO: Replace with self.grid from controller.
+        #TODO: Replace with grid manager.
         total_width = self.label.winfo_width()
         total_height = self.label.winfo_height()
-        vertex_width = math.floor(total_width / self.controller.get_cols())
-        vertex_height = math.floor(total_height / self.controller.get_rows())
+        self.vertex_width = math.floor(total_width / self.controller.get_cols())
+        self.vertex_height = math.floor(total_height / self.controller.get_rows())
         background = Image.new("RGB", (total_width, total_height), color="white")
         for vertex in self.controller.get_verticies():
-            vertex_image = Image.new("RGB", (vertex_width, vertex_height), color=vertex.get_color())
+            vertex_image = Image.new("RGB", (self.vertex_width, self.vertex_height), color=vertex.get_color())
             if vertex.visited:
                 vertex_image.paste(Image.new("RGB", (int(self.vertex_width / 5), int(self.vertex_height / 5)), color="green"),
                                    (round(self.vertex_width / 2), round(self.vertex_height / 2)))
             vertex_image = ImageOps.expand(vertex_image, 1)
-            background.paste(vertex_image, (vertex_width * vertex.x, vertex_height * vertex.y))
+            background.paste(vertex_image, (self.vertex_width * vertex.x, self.vertex_height * vertex.y))
         render = ImageTk.PhotoImage(background)
         self.label.configure(image=render)
         self.label.image = render
@@ -93,7 +96,7 @@ def make_view(show=False, controller=Controller()):
     root.geometry(str(width) + "x" + str(height))
     if show:
         root.mainloop()
-        root.after(1000, app.update_graph)
+        root.after(1, app.update_graph)
     return app
 
 if __name__ == "__main__":
