@@ -59,15 +59,14 @@ class Window(Frame):
         background = Image.new("RGB", (total_width, total_height), color="white")
         for vertex in self.controller.get_verticies():
             vertex_image = Image.new("RGB", (self.vertex_width, self.vertex_height), color=vertex.get_color())
-            if vertex.visited:
-                vertex_image.paste(Image.new("RGB", (int(self.vertex_width / 5), int(self.vertex_height / 5)), color="green"),
+            if vertex.is_visited():
+                vertex_image.paste(Image.new("RGB", (int(self.vertex_width / 5), int(self.vertex_height / 5)), color="black"),
                                    (round(self.vertex_width / 2), round(self.vertex_height / 2)))
             vertex_image = ImageOps.expand(vertex_image, 1)
             background.paste(vertex_image, (self.vertex_width * vertex.x, self.vertex_height * vertex.y))
         render = ImageTk.PhotoImage(background)
         self.label.configure(image=render)
         self.label.image = render
-        self.label.pack()
         self.after(1, self.update_graph)
         return render
 
@@ -91,12 +90,12 @@ def make_view(show=False, controller=Controller()):
     root = Tk()
     width = 500
     height = 500
+    root.geometry("{width}x{height}".format(width=width, height=height))
     app = Window(root, controller, width, height)
     root.wm_title("Seekers")
     root.geometry(str(width) + "x" + str(height))
     if show:
         root.mainloop()
-        root.after(1, app.update_graph)
     return app
 
 if __name__ == "__main__":

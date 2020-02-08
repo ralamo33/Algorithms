@@ -91,10 +91,11 @@ class Graph:
                 return visited
             visited.append(current)
             missing.remove(current)
+            if current.get_status() is Status.OBSTACLE:
+                continue
             if current.get_status() is Status.TARGET:
                 find -= 1
-            if current.get_status() is Status.NORMAL:
-               current.change_status(Status.NORMAL_VISITED, len(visited))
+            current.set_visited(len(visited))
             for edge in current.edges:
                 distance = distances.get(current) + edge.distance
                 if distance < distances.get(edge.neighbor, MAX):
@@ -320,8 +321,8 @@ class MyGrid(Graph):
         self.immediate_update()
         if self.searching:
             for vertex in self.vertices:
-                if vertex.status is Status.NORMAL_VISITED:
-                    vertex.status is Status.NORMAL
+                if vertex.visited:
+                    vertex.visited = False
             self.run()
             self.immediate_update()
 
@@ -380,11 +381,9 @@ class MyGrid(Graph):
 
 
 
-
 class Status(Enum):
     """The status of a vertex. The vertex has a different status for each color."""
     NORMAL = "white"
-    NORMAL_VISITED = "blue"
     TARGET = "yellow"
     OBSTACLE = "black"
     START = "red"
@@ -419,6 +418,11 @@ class Vertex:
         """Get self's color based on self.status"""
         return self.get_status().value
 
+    def is_visited(self):
+        if self.delay > 0:
+            self.delay - 1
+        return self.delay == 0 and self.visited
+
     def get_status(self):
         """
         Get the current status. Then change self status if the delay is up.
@@ -429,6 +433,10 @@ class Vertex:
         else:
             self.delay -= 1
         return self.status
+
+    def set_visited(self, delay=0):
+        self.delay = delay
+        self.visited = True
 
     #ToDo: Change to set_visited()
     def change_status(self, new_status, delay=0):
