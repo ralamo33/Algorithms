@@ -54,7 +54,6 @@ class Graph:
         Get the number of targets in this graph. Or if there are none return 1, ensuring the search does not end early.
         :return: (int) The number of targets in the graph.
         """
-        print(len(self.targets))
         if len(self.targets) == 0:
             return 1
         return len(self.targets)
@@ -124,10 +123,11 @@ class Graph:
                 return
             visited.append(current)
             del distances[current]
+            if current.get_status() is Status.OBSTACLE:
+                continue
             if current.get_status() is Status.TARGET:
                 find -= 1
-            if current.get_status() is Status.NORMAL:
-                current.change_status(Status.NORMAL_VISITED, len(visited))
+            current.set_visited(len(visited))
             for edge in current.edges:
                 if edge.distance < distances.get(edge.neighbor, 0):
                     distances.update({edge.neighbor : edge.distance})
@@ -193,10 +193,11 @@ class Graph:
                 current = planned.pop()
             if current not in visited and (current.status is not Status.OBSTACLE):
                 visited.append(current)
+                if current.status is Status.OBSTACLE:
+                    continue
                 if current.status is Status.TARGET or current in self.targets:
                     self.find -= 1
-                if current.status is Status.NORMAL:
-                    current.change_status(Status.NORMAL_VISITED, len(visited))
+                current.set_visited(len(visited))
                 for neighbor in current.get_neighbors():
                     planned.append(neighbor)
         return visited
@@ -243,10 +244,9 @@ class Graph:
         self.found = False
         self.searching = False
         for vertex in self.vertices:
-            if all or vertex.new_status is Status.NORMAL_VISITED:
-                if vertex.status is Status.TARGET: self.targets.remove(vertex)
-                elif vertex.status is Status.START: self.start = self.vertices[0]
-                vertex.change_status(Status.NORMAL)
+            vertex.visited = False
+            if all:
+                vertex.status = Status.NORMAL
                 vertex.h = MAX
                 vertex.g = MAX
 
@@ -345,9 +345,10 @@ class MyGrid(Graph):
                 current = self.get_closest(open)
                 del open[current]
                 closed.append(current)
-                if current.get_status() is Status.NORMAL:
-                    current.change_status(Status.NORMAL_VISITED, delay)
-                elif current is target:
+                if current.get_status() is Status.OBSTACLE:
+                    continue
+                current.set_visited(delay)
+                if current is target:
                     break
                 for edge in current.edges:
                     neighbor = edge.neighbor
@@ -400,10 +401,9 @@ class Vertex:
         self.delay = 0
         self.visited = False
         self.status = Status.NORMAL
-        self.new_status = Status.NORMAL
 
     def __repr__(self):
-        return "{name} {x} {y} {status}".format(name=self.name, x=self.x, y=self.y, status=self.new_status)
+        return "{name} {x} {y} {status}".format(name=self.name, x=self.x, y=self.y, status=self.status)
 
     def add_neighbor(self, neighbor):
         distance = random.randrange(MaxWeight)
@@ -420,7 +420,7 @@ class Vertex:
 
     def is_visited(self):
         if self.delay > 0:
-            self.delay - 1
+            self.delay -= 1
         return self.delay == 0 and self.visited
 
     def get_status(self):
@@ -428,10 +428,6 @@ class Vertex:
         Get the current status. Then change self status if the delay is up.
         :return: The current status, which may be different from self.new_status
         """
-        if self.delay <= 0:
-            self.status = self.new_status
-        else:
-            self.delay -= 1
         return self.status
 
     def set_visited(self, delay=0):
@@ -439,18 +435,14 @@ class Vertex:
         self.visited = True
 
     #ToDo: Change to set_visited()
-    def change_status(self, new_status, delay=0):
+    def change_status(self, new_status):
         """
         Change self's status to new_status after status has been asked for delay times.
         :param delay: The number of times status should be asked for before it is changed.
         :param new_status: What the status should be changed to.
         :return: The new status, even if it has not yet come into effect.
         """
-        self.delay = delay
-        self.new_status = new_status
-        if delay == 0:
-            self.status = new_status
-        return new_status
+        self.status = new_status
 
 if __name__ == "__main__":
     g = MyGrid()
